@@ -14,9 +14,16 @@ class BytebankApp extends StatelessWidget {
   }
 }
 
-class FormularioTransferencia extends StatelessWidget {
+class FormularioTransferencia extends StatefulWidget {
+  @override
+  _FormularioTransferenciaState createState() =>
+      _FormularioTransferenciaState();
+}
+
+class _FormularioTransferenciaState extends State<FormularioTransferencia> {
   final TextEditingController _controladorCampoNumeroConta =
       TextEditingController();
+
   final TextEditingController _controladorCampoValor = TextEditingController();
 
   @override
@@ -29,24 +36,26 @@ class FormularioTransferencia extends StatelessWidget {
           ],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          Editor(
-            controlador: _controladorCampoNumeroConta,
-            dica: '0000',
-            rotulo: 'Número da conta',
-          ),
-          Editor(
-            controlador: _controladorCampoValor,
-            dica: '0.00',
-            icone: Icons.monetization_on,
-            rotulo: 'Valor',
-          ),
-          RaisedButton(
-            child: Text('Confirmar'),
-            onPressed: () => _criaTransferencia(context),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Editor(
+              controlador: _controladorCampoNumeroConta,
+              dica: '0000',
+              rotulo: 'Número da conta',
+            ),
+            Editor(
+              controlador: _controladorCampoValor,
+              dica: '0.00',
+              icone: Icons.monetization_on,
+              rotulo: 'Valor',
+            ),
+            RaisedButton(
+              child: Text('Confirmar'),
+              onPressed: () => _criaTransferencia(context),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -121,13 +130,17 @@ class ListaTransferenciasState extends State<ListaTransferencias> {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormularioTransferencia();
           }));
-          future.then(
-            (transferenciaRecebida) {
+          future.then((transferenciaRecebida) {
+            Future.delayed(Duration(seconds: 5), () {
               debugPrint('chegou no then do future');
               debugPrint('$transferenciaRecebida');
-              widget._transferencias.add(transferenciaRecebida);
-            },
-          );
+              if (transferenciaRecebida != null) {
+                setState(() {
+                  widget._transferencias.add(transferenciaRecebida);
+                });
+              }
+            });
+          });
         },
       ),
     );
